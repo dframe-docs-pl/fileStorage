@@ -3,38 +3,115 @@ Sposób przechowywania informacji o obrazach jest dowolna. Może być to zwykły
 
 Dframe/fileStorage jest to nakładka na powyzszy system dzięki któremu ustawiając config oraz driver jest już gotowy do użycia i może być wykorzystany w dowolnym systemie.
 
-Wgrywanie
+Konfiguracja
 ^^^^^^^^^
 
-Umieszczanie pliku w lokalnym prywatnym katalogu bez dostępu przez http użyty do tego Model jest dostępny tutaj Poniższy przykład przedstawia odebranie obrazka ze strony php poprzez formularz
-
 .. code-block:: php
 
- if(isset($_POST['upload'])){
-    $fileStorage = new \Dframe\FileStorage\Storage($this->loadModel('FileStorage/Drivers/DatabaseDriver'));
-    $put = $fileStorage->put('local', $_FILES['file']['tmp_name'], 'images/path/name.'.$extension);
-    if($put['return'] == true)
-       exit(json_encode(array('return' => '1', 'response' => 'File Upload OK')));
-           
-    exit(json_encode(array('return' => '0', 'response' => 'Error')));
- }
+     $fileStorage = new \Dframe\FileStorage\Storage($this->loadModel('FileStorage/Drivers/DatabaseDriver'));
+     $fileStorage->settings([
+        'stylists' => [
+            'Orginal' => \Libs\Plugins\FileStorage\Stylist\OrginalStylist::class,
+            'Real' => \Libs\Plugins\FileStorage\Stylist\RealStylist::class,
+            'RectStylist' => \Libs\Plugins\FileStorage\Stylist\RectStylist::class,
+            'SquareStylist' => \Libs\Plugins\FileStorage\Stylist\SquareStylist::class
+        ]
+     ]);
+     
+
+
+Struktura Bazy
+^^^^^^^^^
+
+     
+.. code-block:: mysql
+
+ -- phpMyAdmin SQL Dump
+ -- version 4.6.4
+ -- https://www.phpmyadmin.net/
+ --
+ -- Host: localhost
+ -- Czas generowania: 04 Cze 2017, 15:50
+ -- Wersja serwera: 5.7.16
+ -- Wersja PHP: 7.0.13-1~dotdeb+8.1
  
-Odczytywanie
-^^^^^^^^^^^^
-
-W celu odczytania obrazu możemy zrobić to na 2 sposoby. Jeśli plik był wgrywany prywatnego bez dostępu przez http musimy utworzyć kontroller który go nam z tamtąd pobierze i wyświetli. W tym celu mamy poniższy kod.
-
-.. code-block:: php
-
- exit($fileStorage->renderFile('images/path/name/screenshot.jpg', 'local'));
-Powyższy kod zwróci nam orginalny plik niezależnie czy jest to .jpg czy .pdf
-
-Obróka Obrazka
-^^^^^^^^^^^^^^
-
-Biblioteka posiada dodatkową zaletę obróbki w locie obrazka dzięki temu ze można dopisać swój driver możemy obrabiać obrazek w dowolny sposób.
-
-.. code-block:: php
-
- echo $fileStorage->image('images/path/name/screenshot.jpg')->stylist('square')->size('250x250')->display();
-Po obróbce zostanie zwrócony link do wyrenderowanego kwadratu o wymiarach 250x250
+ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+ SET time_zone = "+00:00";
+ 
+ 
+ /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+ /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+ /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+ /*!40101 SET NAMES utf8mb4 */;
+ 
+ --
+ -- Baza danych: `files`
+ --
+ 
+ -- --------------------------------------------------------
+ 
+ --
+ -- Struktura tabeli dla tabeli `files`
+ --
+ 
+ CREATE TABLE `files` (
+   `file_id` int(11) NOT NULL,
+   `file_adapter` varchar(255) NOT NULL,
+   `file_path` varchar(255) NOT NULL,
+   `file_mime` varchar(127) NOT NULL,
+   `file_metadata` varchar(5000) NOT NULL,
+   `last_update` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ 
+ -- --------------------------------------------------------
+ 
+ --
+ -- Struktura tabeli dla tabeli `files_cache`
+ --
+ 
+ CREATE TABLE `files_cache` (
+   `id` int(11) NOT NULL,
+   `file_id` int(11) NOT NULL,
+   `file_cache_path` varchar(255) NOT NULL,
+   `file_cache_mime` varchar(127) NOT NULL,
+   `file_cache_metadata` varchar(5000) NOT NULL,
+   `last_update` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ 
+ --
+ -- Indeksy dla zrzutów tabel
+ --
+ 
+ --
+ -- Indexes for table `files`
+ --
+ ALTER TABLE `files`
+   ADD UNIQUE KEY `file_path` (`file_path`),
+   ADD UNIQUE KEY `file_adapter` (`file_adapter`,`file_path`,`file_mime`),
+   ADD KEY `id` (`file_id`);
+ 
+ --
+ -- Indexes for table `files_cache`
+ --
+ ALTER TABLE `files_cache`
+   ADD PRIMARY KEY (`id`),
+   ADD UNIQUE KEY `file_cache_path` (`file_cache_path`,`file_cache_mime`),
+   ADD KEY `file_id` (`file_id`);
+ 
+ --
+ -- AUTO_INCREMENT for dumped tables
+ --
+ 
+ --
+ -- AUTO_INCREMENT dla tabeli `files`
+ --
+ ALTER TABLE `files`
+   MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+ --
+ -- AUTO_INCREMENT dla tabeli `files_cache`
+ --
+ ALTER TABLE `files_cache`
+   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+ /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+ /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+ /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
