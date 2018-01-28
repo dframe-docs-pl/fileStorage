@@ -1,55 +1,55 @@
-WhereChunk
+Wgrywanie
 ^^^^^^^^^^
 
-Tak zwane kawałki, Pomocne do przeszukiwania/filtrowania danych w bazie. Gdy tworzymy zapytanie do bazy dorzucamy różne ograniczenia WHERE za pomocą chunków możemy prościej i mniejszą ilością kodu dodawać bądź usuwać parametry doklejane do WHERE
+Umieszczanie pliku w lokalnym prywatnym katalogu bez dostępu przez http użyty do tego Model jest dostępny tutaj Poniższy przykład przedstawia odebranie obrazka ze strony php poprzez formularz
 
 .. code-block:: php
 
- namespace Controller;
- use Dframe\Config;
- use Dframe\Database\WhereChunk;
- use Dframe\Database\WhereStringChunk;
- 
- class UserController extends \Controller\Controller
- {
- 
-     public function index() {
-         $userModel = $this->loadModel('User');
-         $view = $this->loadView('Index');
- 
-         $order = array('user.id', 'ASC');
-         $where = array();
-         if(isset($_POST['search']['username']))
-             $where[] = new WhereChunk('`users`.`username`', '%'.$_POST['search']['username'].'%', 'LIKE');
-      
-         $users = $userModel->getUsers($where, $order[0], $order[1], $_POST['resourceId']);
-         exit($view->renderJSON(array('users' => $users)));
+ if(isset($_POST['upload'])){
+     $fileStorage = new \Dframe\FileStorage\Storage($this->loadModel('FileStorage/Drivers/DatabaseDriver'));
+     $put = $fileStorage->put('local', $_FILES['file']['tmp_name'], 'images/path/name.'.$extension);
+     if($put['return'] == true){
+        exit(json_encode(array('return' => '1', 'response' => 'File Upload OK')));
+     }elseif($put['return'] == false){
+        //I know file exist, try put forced
+        $put = $fileStorage->put('local', $_FILES['file']['tmp_name'], 'images/path/name.'.$extension, true);
+        if($put['return'] == true){
+            exit(json_encode(array('return' => '1', 'response' => 'File Upload forced method')));
      }
+            
+     exit(json_encode(array('return' => '0', 'response' => 'Error')));
+ }
+
+
+Odczytywanie
+^^^^^^^^^^
+
+W celu odczytania obrazu możemy zrobić to na 2 sposoby. Jeśli plik był wgrywany prywatnego bez dostępu przez http musimy utworzyć kontroller który go nam z tamtąd pobierze i wyświetli. W tym celu mamy poniższy kod.
+
 
 .. code-block:: php
 
- namespace Model;
+ exit($fileStorage->renderFile('images/path/name/screenshot.jpg', 'local'));
  
- class UserModel extends \Model\Model
- {
-     public function resources($whereObject, $order = 'id', $sort = 'DESC'){
- 
-         $query = $this->baseClass->db->prepareQuery('SELECT * FROM user');        
-         $query->prepareWhere($whereObject);
-         $query->prepareOrder($order, $sort);
- 
-         $results = $this->baseClass->db->pdoQuery($query->getQuery(), $query->getParams())->results();
- 
-         return $this->methodResult(true, array('data' => $results));
-     }
+Powyższy kod zwróci nam orginalny plik niezależnie czy jest to .jpg czy .pdf
 
-W przypadku wywołania $_POST do podstawowego zapytania zostanie doklejony warunek. Wszystkie parametry automatycznie są bindowane do PDO więc nie musimy już oto matwić.
+Obróka Obrazka
+^^^^^^^^^^
 
-WhereStringChunk
-^^^^^^^^^^^^^^^^
-
-Ciekawszą i częściej w praktyce wykorzystywaną klasą jest WhereStringChunk daje ona nam dużo większne możliwości niż zwykłe WhereChunk.
+Biblioteka posiada dodatkową zaletę obróbki w locie obrazka dzięki temu ze można dopisać swój driver możemy obrabiać obrazek w dowolny sposób.
 
 .. code-block:: php
 
- $where[] = new \Dframe\Database\WhereStringChunk('col_id > ?', array('1'));
+ echo $fileStorage->image('images/path/name/screenshot.jpg')->stylist('square')->size('250x250')->display();
+ 
+Po obróbce zostanie zwrócony link do wyrenderowanego kwadratu o wymiarach 250x250
+
+Kasowanie
+^^^^^^^^^^
+
+Drop kasuje nam plik z podanego adaptera, automatycznie jest również wybierany adapter Cache z którego są usuwane wszystkie kopie tego pliku.
+
+.. code-block:: php
+
+ echo $fileStorage->drop('local', 'images/path/name/screenshot.jpg');
+ 
