@@ -1,9 +1,7 @@
 Wgrywanie
 ^^^^^^^^^^
 
-Umieszczanie pliku w lokalnym prywatnym katalogu bez dostępu przez http użyty do tego Model jest dostępny tutaj Poniższy przykład przedstawia odebranie obrazka ze strony php poprzez formularz
-
-.. code-block:: php
+Umieszczanie pliku w lokalnym prywatnym katalogu bez dostępu przez http użyty do tego Model jest dostępny tutaj Poniższy przykład przedstawia odebranie obrazka ze strony php poprzez formularz.
 
 .. code-block:: php
 
