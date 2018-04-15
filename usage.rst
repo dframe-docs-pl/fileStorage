@@ -5,19 +5,26 @@ Umieszczanie pliku w lokalnym prywatnym katalogu bez dostępu przez http użyty 
 
 .. code-block:: php
 
- if(isset($_POST['upload'])){
-     $fileStorage = new \Dframe\FileStorage\Storage($this->loadModel('FileStorage/Drivers/DatabaseDriver'));
-     $put = $fileStorage->put('local', $_FILES['file']['tmp_name'], 'images/path/name.'.$extension);
-     if($put['return'] == true){
-        exit(json_encode(array('return' => '1', 'response' => 'File Upload OK')));
-     }elseif($put['return'] == false){
-        //I know file exist, try put forced
-        $put = $fileStorage->put('local', $_FILES['file']['tmp_name'], 'images/path/name.'.$extension, true);
-        if($put['return'] == true){
-            exit(json_encode(array('return' => '1', 'response' => 'File Upload forced method')));
+.. code-block:: php
+
+ if (isset($_POST['upload'])) {
+ 
+     $FileStorage = new \Dframe\FileStorage\Storage($this->loadModel('FileStorage/Drivers/DatabaseDriver'));
+     $put = $FileStorage->put('local', $_FILES['file']['tmp_name'], 'images/path/name.'.$extension);
+     if ($put['return'] == true) { 
+         exit(json_encode(array('return' => '1', 'response' => 'File Upload OK')));
+         
+     } elseif($put['return'] == false) {
+    
+         //I know file exist, try put forced
+         $put = $FileStorage->put('local', $_FILES['file']['tmp_name'], 'images/path/name.'.$extension, true);
+         if ($put['return'] == true) {
+             exit(json_encode(array('return' => '1', 'response' => 'File Upload forced method')));
+         } 
+         
      }
-            
-     exit(json_encode(array('return' => '0', 'response' => 'Error')));
+           
+    exit(json_encode(array('return' => '0', 'response' => 'Error')));
  }
 
 
@@ -29,7 +36,7 @@ W celu odczytania obrazu możemy zrobić to na 2 sposoby. Jeśli plik był wgryw
 
 .. code-block:: php
 
- exit($fileStorage->renderFile('images/path/name/screenshot.jpg', 'local'));
+ exit($FileStorage->renderFile('images/path/name/screenshot.jpg', 'local'));
  
 Powyższy kod zwróci nam orginalny plik niezależnie czy jest to .jpg czy .pdf
 
@@ -40,7 +47,7 @@ Biblioteka posiada dodatkową zaletę obróbki w locie obrazka dzięki temu ze m
 
 .. code-block:: php
 
- echo $fileStorage->image('images/path/name/screenshot.jpg')->stylist('square')->size('250x250')->display();
+ echo $FileStorage->image('images/path/name/screenshot.jpg')->stylist('square')->size('250x250')->display();
  
 Po obróbce zostanie zwrócony link do wyrenderowanego kwadratu o wymiarach 250x250
 
@@ -51,5 +58,5 @@ Drop kasuje nam plik z podanego adaptera, automatycznie jest również wybierany
 
 .. code-block:: php
 
- echo $fileStorage->drop('local', 'images/path/name/screenshot.jpg');
+ echo $FileStorage->drop('local', 'images/path/name/screenshot.jpg');
  
