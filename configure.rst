@@ -8,8 +8,8 @@ Konfiguracja
 
 .. code-block:: php
 
-     $fileStorage = new \Dframe\FileStorage\Storage($this->loadModel('FileStorage/Drivers/DatabaseDriver'));
-     $fileStorage->settings([
+     $FileStorage = new \Dframe\FileStorage\Storage($this->loadModel('FileStorage/Drivers/DatabaseDriver'));
+     $FileStorage->settings([
         'stylists' => [
             'Orginal' => \Libs\Plugins\FileStorage\Stylist\OrginalStylist::class,
             'Real' => \Libs\Plugins\FileStorage\Stylist\RealStylist::class,
