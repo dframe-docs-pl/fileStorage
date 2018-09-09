@@ -3,8 +3,20 @@ Sposób przechowywania informacji o obrazach jest dowolna. Może być to zwykły
 
 Dframe/fileStorage jest to nakładka na powyzszy system dzięki któremu ustawiając config oraz driver jest już gotowy do użycia i może być wykorzystany w dowolnym systemie.
 
+Instalacja
+----------
+
+Z poziomu konsoli bash wykonaj polecenie composera*
+
+.. code-block:: bash
+
+ $ composer require dframe/fileftorage
+
+Albo pobierz ręcznie https://github.com/dframe/fileStorage/releases
+
+
 Konfiguracja
-^^^^^^^^^
+----------
 
 .. code-block:: php
 
@@ -21,8 +33,7 @@ Konfiguracja
 
 
 Struktura Bazy
-^^^^^^^^^
-
+----------
      
 .. code-block:: mysql
 
