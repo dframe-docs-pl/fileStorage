@@ -81,9 +81,9 @@ Biblioteka ma dodatkową funkcję przetwarzania obrazu w czasie rzeczywistym, dz
 
  echo $FileStorage->image('images/path/name/screenshot.jpg')->stylist('square')->size('250x250')->display();
  
- Po przetworzeniu zostanie zwrócony link do renderowanego obrazu o rozmiarze 250x250.
- 
- Return array
+Po przetworzeniu zostanie zwrócony link do renderowanego obrazu o rozmiarze 250x250.
+
+Return array
 
 .. code-block:: php
 
