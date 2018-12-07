@@ -33,7 +33,7 @@ Konfiguracja
 
 Wgrywanie
 ----------
-Umieszczenie pliku w lokalnym katalogu prywatnym, bez dostępu do http. Przykładowy model jest dostępny `here
+Umieszczenie pliku w lokalnym katalogu prywatnym, bez dostępu do http. Przykładowy model jest dostępny `Tutaj
 <https://github.com/dframe/fileStorage/blob/master/examples/example1/app/Model/FileStorage/Drivers/DatabaseDriver.php>`_
 
 .. code-block:: php
