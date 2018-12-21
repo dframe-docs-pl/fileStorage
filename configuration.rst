@@ -20,15 +20,18 @@ Konfiguracja
 
 .. code-block:: php
 
-     $FileStorage = new \Dframe\FileStorage\Storage($this->loadModel('FileStorage/Drivers/DatabaseDriver'));
-     $FileStorage->settings([
-        'stylists' => [
-            'Orginal' => \Libs\Plugins\FileStorage\Stylist\OrginalStylist::class,
-            'Real' => \Libs\Plugins\FileStorage\Stylist\RealStylist::class,
-            'RectStylist' => \Libs\Plugins\FileStorage\Stylist\RectStylist::class,
-            'SquareStylist' => \Libs\Plugins\FileStorage\Stylist\SquareStylist::class
-        ]
-     ]);
+ $driver = $this->loadModel('FileStorage/Drivers/DatabaseDriver');
+ $config = Config::load('fileStorage')->get();
+     
+ $FileStorage = new \Dframe\FileStorage\Storage($driver, $config);
+ $FileStorage->settings([
+    'stylists' => [
+        'Original' => \Libs\Plugins\FileStorage\Stylist\OrginalStylist::class,
+        'Real' => \Libs\Plugins\FileStorage\Stylist\RealStylist::class,
+        'RectStylist' => \Libs\Plugins\FileStorage\Stylist\RectStylist::class,
+        'SquareStylist' => \Libs\Plugins\FileStorage\Stylist\SquareStylist::class
+    ]
+ ]);
      
 
 Wgrywanie
@@ -40,22 +43,25 @@ Umieszczenie pliku w lokalnym katalogu prywatnym, bez dostępu do http. Przykła
 
  if (isset($_POST['upload'])) {
  
-     $FileStorage = new \Dframe\FileStorage\Storage($this->loadModel('FileStorage/Drivers/DatabaseDriver'));
-     $put = $FileStorage->put('local', $_FILES['file']['tmp_name'], 'images/path/name.'.$extension);
-     if ($put['return'] == true) { 
-         exit(json_encode(array('return' => '1', 'response' => 'File Upload OK')));
-         
-     } elseif($put['return'] == false) {
-    
-         //I know file exist, try put forced
-         $put = $FileStorage->put('local', $_FILES['file']['tmp_name'], 'images/path/name.'.$extension, true);
-         if ($put['return'] == true) {
-             exit(json_encode(array('return' => '1', 'response' => 'File Upload forced method')));
-         } 
-         
+     if (!$FileStorage->isAllowedFileType($_FILES['file'], ['jpg' => ['image/jpeg', 'image/pjpeg']])) {
+         exit(json_encode(['code' => 400, 'message' => 'Uploaded file is not a valid image. Only JPG files are allowed']));
      }
-           
-    exit(json_encode(array('return' => '0', 'response' => 'Error')));
+ 
+     $put = $FileStorage->put('local', $_FILES['file']['tmp_name'], 'images/' . $_FILES['file']['name']);
+     if ($put['return'] == true) {
+         exit(json_encode(['code' => 200, 'message' => 'File Uploaded']));
+ 
+     } elseif ($put['return'] == false) {
+ 
+         //I know file exist, try put forced
+         $put = $FileStorage->put('local', $_FILES['file']['tmp_name'], 'images/' . $_FILES['file']['name'], true);
+         if ($put['return'] == true) {
+             exit(json_encode(['code' => 207, 'message' => 'File existed and was overwritten']));
+         }
+ 
+     }
+ 
+     exit(json_encode(['code' => 500, 'message' => 'Internal Error']));
  }
  
 Czytanie
