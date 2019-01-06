@@ -20,20 +20,111 @@ Konfiguracja
 
 .. code-block:: php
 
- $driver = $this->loadModel('FileStorage/Drivers/DatabaseDriver');
- $config = Config::load('fileStorage')->get();
-     
- $FileStorage = new \Dframe\FileStorage\Storage($driver, $config);
+.. code-block:: php
+
+ use League\Flysystem\Adapter\Local;
+ use League\Flysystem\Cached\CachedAdapter;
+ use League\Flysystem\Cached\Storage\Memory as CacheStore;
+ use League\Flysystem\Filesystem;
+ use Model\DatabaseDriver;
+
+ // Create the original file store
+ $localAdapter = new Local(__DIR__ . '/uploads');
+ 
+ // Create the cache store
+ $cacheStore = new CacheStore();
+ 
+ // Decorate the adapter
+ $cacheAdapter = new CachedAdapter(new Local(__DIR__ . '/public_html/cache'), $cacheStore);
+ 
+
+ $config = [
+     'pluginsDir' => __DIR__ . '/plugins',
+     'adapters' => [
+         'local' => new Filesystem($localAdapter),
+         'cache' => new Filesystem($cacheAdapter), 
+     ],
+     'cache' => [
+         'life' => 600 // in seconds
+     ],
+     'public_urls' => [
+         'local' => ''
+     ]
+ ];
+
+ $FileStorage = new \Dframe\FileStorage\Storage(new DatabaseDriver, $config);
  $FileStorage->settings([
     'stylists' => [
-        'Original' => \Libs\Plugins\FileStorage\Stylist\OrginalStylist::class,
-        'Real' => \Libs\Plugins\FileStorage\Stylist\RealStylist::class,
-        'RectStylist' => \Libs\Plugins\FileStorage\Stylist\RectStylist::class,
-        'SquareStylist' => \Libs\Plugins\FileStorage\Stylist\SquareStylist::class
+        'simple' => \Dframe\FileStorage\Stylist\SimpleStylist::class
     ]
  ]);
      
 
+Przykładowy uzupełniony Driver znajdziesz na https://github.com/dframe/fileStorage/blob/master/examples/example1/app/Model/FileStorage/Drivers/DatabaseDriver.php 
+
+
+Poniżej pusty Driver
+
+.. code-block:: php
+ 
+ namespace Model; 
+ 
+ use Dframe\FileStorage\Drivers\DatabaseDriverInterface;
+ 
+ class DatabaseDriver implements DatabaseDriverInterface
+ {
+     /**
+      * @param      $adapter
+      * @param      $path
+      * @param bool $cache
+      *
+      * @return mixed
+      */
+     public function get($adapter, $path, $cache = false)
+     {
+         // TODO: Implement get() method.
+     }
+     
+     /**
+      * @param $adapter
+      * @param $path
+      * @param $mine
+      * @param $stream
+      *
+      * @return mixed
+      */
+     public function put($adapter, $path, $mine, $stream)
+     {
+         // TODO: Implement put() method.
+     }
+     
+     /**
+      * @param $adapter
+      * @param $originalId
+      * @param $path
+      * @param $mine
+      * @param $stream
+      *
+      * @return mixed
+      */
+     public function cache($adapter, $originalId, $path, $mine, $stream)
+     {
+         // TODO: Implement cache() method.
+     }
+     
+     /**
+      * @param $adapter
+      * @param $path
+      *
+      * @return mixed
+      */
+     public function drop($adapter, $path)
+     {
+         // TODO: Implement drop() method.
+     }
+     
+     
+     
 Wgrywanie
 ----------
 Umieszczenie pliku w lokalnym katalogu prywatnym, bez dostępu do http. Przykładowy model jest dostępny `Tutaj
