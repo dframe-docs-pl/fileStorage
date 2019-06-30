@@ -1,5 +1,5 @@
 Biblioteka do obsługi wszelkiego rodzaju plików. System opiera się na podstawowym założeniu wgrania pliku i jego odczycie. Kilka dodatkowych metod sprawia ze jest przyjazna w urzyciu np. mechanizm zabezpieczający przed przypadkowym nadpisaniem pliku. System sam poinformuje ze taki plik w danej lokalizacji istnieje. 
-Sposób przechowywania informacji o obrazach jest dowolna. Może być to zwykły file_exist bądź mysql. Dodatkowym autem biblioteki jest to ze pliki można zapisywać w dowolny sposób (Ftp, Local, NullAdapter) poprzez league/flysystem Bądź twórzyć własne adaptery. 
+Sposób przechowywania informacji o obrazach jest dowolna. Może być to zwykły file_exist bądź `mysql <https://dframeframework.com/pl/docs/database/master/query>`_. Dodatkowym autem biblioteki jest to ze pliki można zapisywać w dowolny sposób (Ftp, Local, NullAdapter) poprzez `thephpleague/flysystem <https://github.com/thephpleague/flysystem>`_ Bądź twórzyć własne adaptery. 
 
 Dframe/fileStorage jest to nakładka na powyzszy system dzięki któremu ustawiając config oraz driver jest już gotowy do użycia i może być wykorzystany w dowolnym systemie.
 
@@ -60,7 +60,7 @@ Konfiguracja
  ]);
      
 
-Przykładowy uzupełniony Driver znajdziesz na https://github.com/dframe/fileStorage/blob/master/examples/example1/app/Model/FileStorage/Drivers/DatabaseDriver.php 
+Przykładowy uzupełniony Driver znajdziesz tutaj `Database Driver <https://github.com/dframe/fileStorage/blob/master/examples/example1/app/Model/FileStorage/Drivers/DatabaseDriver.php>`_
 
 
 Poniżej pusty Driver
